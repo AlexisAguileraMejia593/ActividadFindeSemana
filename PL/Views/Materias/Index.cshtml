@@ -1,0 +1,63 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API a Tarjetas</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <div id="content" class="row"></div>
+    </div>
+
+    <script>
+        fetch('https://besvc.capacitateparaelempleo.org/api/inscriptions/TestReport') // reemplaza 'URL_DE_TU_API' con la URL de tu API
+            .then(response => response.json())
+            .then(data => {
+                let content = document.getElementById('content');
+                data.inscriptions.forEach((item, index) => {
+                    let card = document.createElement('div');
+                    card.className = 'card col-md-4';
+                    let cardBody = document.createElement('div');
+                    cardBody.className = 'card-body';
+                    cardBody.style.display = 'none'; // Oculta el contenido de la tarjeta inicialmente
+                    cardBody.innerHTML = `
+                            <h5 class="card-title">${item.course.name}</h5>
+                            <p class="card-text">Inscripción: ${item.inscripcionDate}</p>
+                            <p class="card-text">Certificación: ${item.certificationDate}</p>
+                            <p class="card-text">Avance: ${item.advance}%</p>
+                            <p class="card-text">Puntuación del curso: ${item.scoreCourse}</p>
+                            <p class="card-text">Folio del certificado: ${item.folioCertificate}</p>
+                        `;
+                    let img = document.createElement('img');
+                    img.src = item.course.imageUrl;
+                    img.className = 'card-img-top';
+                    img.alt = item.course.name;
+                    img.addEventListener('click', () => { // Agrega un evento de clic a la imagen
+                        if (cardBody.style.display === 'none') {
+                            cardBody.style.display = 'block'; // Muestra el contenido de la tarjeta al hacer clic en la imagen
+                        } else {
+                            cardBody.style.display = 'none'; // Oculta el contenido de la tarjeta al hacer clic nuevamente en la imagen
+                        }
+                    });
+                    card.appendChild(img);
+                    card.appendChild(cardBody);
+                    content.appendChild(card);
+                    if ((index + 1) % 3 === 0) {
+                        let breakRow = document.createElement('div');
+                        breakRow.className = 'w-100';
+                        content.appendChild(breakRow);
+                    }
+                });
+            })
+            .catch(error => console.error(error));
+    </script>
+</body>
+</html>
